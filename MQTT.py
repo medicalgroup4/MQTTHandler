@@ -14,7 +14,7 @@ class Message_mode(Enum):
     NON_BLOCKING = 1
 
 
-# MQTT Class Version 0.15
+# MQTT Class Version 0.17
 # wrapper around the paho mqtt library to make life a bit easier.
 class MQTT:
     # error messages:
@@ -64,16 +64,18 @@ class MQTT:
     def connect(self) -> None:
         try:
             self._client.connect(self._ip, self._port)
+            self._connected = True
             if self._mode == Message_mode.NON_BLOCKING:
                 self._client.loop_start()
             elif self._mode == Message_mode.BLOCKING:
                 self._client.loop_forever()
-            self._connected = True
         except socket.gaierror as err:
             raise ValueError(self.__ERROR_COULD_NOT_CONNECT % (self._ip, self._port))
+        print("connected variable:", self._connected)
 
     # disconnect from the broker, if currently connected to one
     def disconnect(self) -> None:
+        
         if self._connected:
             self._client.disconnect()
             if self._mode == Message_mode.NON_BLOCKING: self._client.loop_stop()
@@ -130,7 +132,6 @@ class MQTT:
 
     # function which runs on connection with a broker
     def __on_connect(self, client, userdata, flags, rc):
-        print("test")
         if rc == 0:
             self._log(self.__LOG_BROKER_CONNECT % self._ip)
             self._client.subscribe(self._topics)
