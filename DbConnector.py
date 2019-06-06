@@ -34,7 +34,7 @@ class DbConnector:
 
     def getPatientName(self, patient_id):
         mycursor = self.mydb.cursor()
-        sql = "SELECT name FROM patient WHERE id = %d" % patient_id
+        sql = "SELECT name FROM Patients WHERE id = %d" % patient_id
         mycursor.execute(sql)
         row = mycursor.fetchone()
         return row[0]
