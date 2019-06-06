@@ -30,6 +30,14 @@ class DbConnector:
         mycursor.execute(sql, val)
         self.mydb.commit()
         print("Measurement inserted into db: ", val)
+    
+
+    def getPatientName(self, patient_id):
+        mycursor = self.mydb.cursor()
+        sql = "SELECT name FROM patient WHERE id = %d" % patient_id
+        mycursor.execute(sql)
+        row = mycursor.fetchone()
+        return row[0]
 
 
 
