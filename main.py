@@ -9,7 +9,7 @@ topic for watch response: watch/ack
 from MQTT import *
 from DbConnector import *
 
-DB = DbConnector()
+# DB = DbConnector()
 
 def database_message_callback(message):
     print("Received message on topic database/message with id %d" % message.id)
@@ -17,7 +17,7 @@ def database_message_callback(message):
     print("With severity %d" % message.severity)
     print("At location %s" % message.location)
     print("Message contents:\n%s" % message.message)
-    DB.storeMessage(message)
+    # DB.storeMessage(message)
     
 
 def database_measurement_callback(measurement):
@@ -27,6 +27,7 @@ def database_measurement_callback(measurement):
     print("diastolic pressure: %d" % measurement.diastolic)
     print("oxygen: %d" % measurement.oxygen)
     print("Heartrate: %d" % measurement.heartrate)
+    # DB.storeMeasurement(measurement)
 
 def message_callback(topic, message):
     topic_lookup = {
