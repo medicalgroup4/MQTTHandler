@@ -36,7 +36,7 @@ def message_callback(topic, message):
     }
     topic_lookup[topic](message)
 
-print(DB.getPatientName(99))
+print("Patient with id 99:", DB.getPatientName(99))
 
 mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
 #mqtt = MQTT(ip="iot.eclipse.org", port=1883, qos=2, mode=Message_mode.BLOCKING)
