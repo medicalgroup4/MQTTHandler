@@ -1,9 +1,7 @@
 import mysql.connector
-from Message import Message
 
 
 class DbConnector:
-    @classmethod
     def __init__(self):
         self.mydb = mysql.connector.connect(
             host="localhost",
@@ -13,7 +11,7 @@ class DbConnector:
         )
         print(self.mydb)
 
-    # funciton that takes an instance of type Message and stores the data into the database
+    # function that takes an instance of type Message and stores the data into the database
     def storeMessage(self, mes):
         mycursor = self.mydb.cursor()
 
@@ -23,7 +21,7 @@ class DbConnector:
         self.mydb.commit()
         print("Message inserted: ", val)
 
-    # funciton that takes an instance of type Measurement and stores the data into the database
+    # function that takes an instance of type Measurement and stores the data into the database
     def storeMeasurement(self, mea):
         mycursor = self.mydb.cursor()
 
