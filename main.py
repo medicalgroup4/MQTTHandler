@@ -1,8 +1,7 @@
 """
-topic for receiving message: database/message
-topic for receiving measurement: database/measurement
+topic for receiving message: message
+topic for receiving measurement: measurement
 
-topic for sending message to watch: watch/message
 topic for watch response: watch/ack
 """
 
@@ -15,19 +14,17 @@ DB = DbConnector()
 
 def database_message_callback(message):
     patient_name = DB.getPatientName(message.patient_id)
-    print("Received message on topic database/message with id %d" % message.id)
+    print("Received message on topic message with id %d" % message.id)
     print("For patient with id %d and name %s" % (message.patient_id, patient_name))
     print("With severity %d" % message.severity)
     print("At location %s" % message.location)
     print("Message contents:\n%s" % message.message)
     DB.storeMessage(message)
-    message_with_id = DB.getLatestMessageFrom(message.patient_id)
-    mqtt.publish_message("watch/message", message_with_id)
 
     
 
 def database_measurement_callback(measurement):
-    print("received database measurement on topic database/measurement with id %d" % measurement.id)
+    print("received database measurement on topic measurement with id %d" % measurement.id)
     print("From patient with id %d" % measurement.patient_id)
     print("systolic pressure: %d" % measurement.systolic)
     print("diastolic pressure: %d" % measurement.diastolic)
@@ -37,13 +34,13 @@ def database_measurement_callback(measurement):
 
 def message_callback(topic, message):
     topic_lookup = {
-        "database/message": database_message_callback,
-        "database/measurement": database_measurement_callback
+        "message": database_message_callback,
+        "measurement": database_measurement_callback
     }
     topic_lookup[topic](message)
 
 mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["database/message", "database/measurement"])
+mqtt.sub_to_topics(["message", "measurement"])
 
 try:
     mqtt.connect()
