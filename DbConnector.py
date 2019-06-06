@@ -37,7 +37,10 @@ class DbConnector:
         sql = "SELECT name FROM Patients WHERE id = %d" % patient_id
         mycursor.execute(sql)
         row = mycursor.fetchone()
-        return row
+        if row is None:
+            return None
+        else:
+            return row[0]
 
 
 
