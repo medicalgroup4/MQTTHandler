@@ -1,42 +1,58 @@
 import mysql.connector
-
+from Message import Message
 
 class DbConnector:
     def __init__(self):
-        self.mydb = mysql.connector.connect(
+        self.db = mysql.connector.connect(
             host="localhost",
             user="root",
             passwd="1234Hoedjevan!",
             database="medicaldb"
         )
-        print(self.mydb)
+        print(self.db)
 
     # function that takes an instance of type Message and stores the data into the database
     def storeMessage(self, mes):
-        mycursor = self.mydb.cursor()
+        cursor = self.db.cursor()
 
         sql = "INSERT INTO Messages (patient_id, severity, message, location) VALUES (%s, %s, %s, %s)"
         val = (mes.patient_id, mes.severity, mes.message, mes.location)
-        mycursor.execute(sql, val)
-        self.mydb.commit()
+        cursor.execute(sql, val)
+        self.db.commit()
         print("Message inserted: ", val)
+    
+    def getLatestMessageFrom(self, patient_id):
+        cursor = self.db.cursor()
+
+        sql = "SELECT * FROM Messages WHERE patient_id = %s ORDER BY id DESC LIMIT 1"
+        val = (patient_id,)
+        cursor.execute(sql, val)
+        row = cursor.fetchone()
+        if row is None:
+            return None
+        else:
+            #               id            severity         message
+            #                    patient_id       location
+            return Message(row[0], row[1], row[2], row[4], row[3])
+
 
     # function that takes an instance of type Measurement and stores the data into the database
     def storeMeasurement(self, mea):
-        mycursor = self.mydb.cursor()
+        cursor = self.db.cursor()
 
         sql = "INSERT INTO Measurements (patient_id, systolic, diastolic, oxygen, heartrate) VALUES (%s, %s, %s, %s, %s)"
         val = (mea.patient_id, mea.systolic, mea.diastolic, mea.oxygen, mea.heartrate)
-        mycursor.execute(sql, val)
-        self.mydb.commit()
+        cursor.execute(sql, val)
+        self.db.commit()
         print("Measurement inserted into db: ", val)
     
 
     def getPatientName(self, patient_id):
-        mycursor = self.mydb.cursor()
-        sql = "SELECT name FROM Patients WHERE id = %d" % patient_id
-        mycursor.execute(sql)
-        row = mycursor.fetchone()
+        cursor = self.db.cursor()
+        sql = "SELECT name FROM Patients WHERE id = %s"
+        val = (patient_id,)
+        cursor.execute(sql, val)
+        row = cursor.fetchone()
         if row is None:
             return None
         else:

@@ -9,15 +9,23 @@ topic for watch response: watch/ack
 from MQTT import *
 from DbConnector import *
 
+mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
+mqtt.message_callback = message_callback
+mqtt.sub_to_topics(["database/message", "database/measurement"])
+
 DB = DbConnector()
 
 def database_message_callback(message):
+    patient_name = DB.getPatientName(message.patient_id)
     print("Received message on topic database/message with id %d" % message.id)
-    print("For patient with id %d" % message.patient_id)
+    print("For patient with id %d and name %s" % (message.patient_id, patient_name))
     print("With severity %d" % message.severity)
     print("At location %s" % message.location)
     print("Message contents:\n%s" % message.message)
     DB.storeMessage(message)
+    message_with_id = DB.getLatestMessageFrom(message.patient_id)
+    mqtt.publish_message("watch/message", message_with_id)
+
     
 
 def database_measurement_callback(measurement):
@@ -36,12 +44,6 @@ def message_callback(topic, message):
     }
     topic_lookup[topic](message)
 
-print("Patient with id 99:", DB.getPatientName(99))
-
-mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
-#mqtt = MQTT(ip="iot.eclipse.org", port=1883, qos=2, mode=Message_mode.BLOCKING)
-mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["database/message", "database/measurement"])
 try:
     mqtt.connect()
 except KeyboardInterrupt:
