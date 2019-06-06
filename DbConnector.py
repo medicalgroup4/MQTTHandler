@@ -15,7 +15,7 @@ class DbConnector:
     def storeMessage(self, mes):
         mycursor = self.mydb.cursor()
 
-        sql = "INSERT INTO Messages (patient_id, severity, message, location) VALUES (%d, %d, %s, %s)"
+        sql = "INSERT INTO Messages (patient_id, severity, message, location) VALUES (%s, %s, %s, %s)"
         val = (mes.patient_id, mes.severity, mes.message, mes.location)
         mycursor.execute(sql, val)
         self.mydb.commit()
