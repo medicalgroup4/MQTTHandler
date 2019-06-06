@@ -10,8 +10,6 @@ from MQTT import *
 from DbConnector import *
 
 mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
-mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["database/message", "database/measurement"])
 
 DB = DbConnector()
 
@@ -43,6 +41,9 @@ def message_callback(topic, message):
         "database/measurement": database_measurement_callback
     }
     topic_lookup[topic](message)
+
+mqtt.message_callback = message_callback
+mqtt.sub_to_topics(["database/message", "database/measurement"])
 
 try:
     mqtt.connect()
