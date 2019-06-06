@@ -25,7 +25,7 @@ class DbConnector:
     def storeMeasurement(self, mea):
         mycursor = self.mydb.cursor()
 
-        sql = "INSERT INTO Measurements (patient_id, systolic, diastolic, oxygen, heartrate) VALUES (%d, %f, %f, %f, %f)"
+        sql = "INSERT INTO Measurements (patient_id, systolic, diastolic, oxygen, heartrate) VALUES (%s, %s, %s, %s, %s)"
         val = (mea.patient_id, mea.systolic, mea.diastolic, mea.oxygen, mea.heartrate)
         mycursor.execute(sql, val)
         self.mydb.commit()
