@@ -36,7 +36,7 @@ class DbConnector:
         mycursor = self.mydb.cursor()
         sql = "SELECT name FROM Patients WHERE id = %s"
         val = (patient_id)
-        mycursor.execute(sql)
+        mycursor.execute(sql, val)
         row = mycursor.fetchone()
         return row[0]
 
