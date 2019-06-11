@@ -7,7 +7,8 @@ class DbConnector:
             host="localhost",
             user="root",
             passwd="1234Hoedjevan!",
-            database="medicaldb"
+            database="medicaldb",
+            socket="/var/run/mysqld"
         )
         print(self.db)
 
