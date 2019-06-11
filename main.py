@@ -37,13 +37,13 @@ def database_measurement_callback(measurement):
 
 def message_callback(topic, message):
     topic_lookup = {
-        "message": database_message_callback,
-        "measurement": database_measurement_callback
+        "database/message": database_message_callback,
+        "database/measurement": database_measurement_callback
     }
     topic_lookup[topic](message)
 
 mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["message", "measurement"])
+mqtt.sub_to_topics(["database/message", "database/measurement"])
 
 try:
     mqtt.connect()
