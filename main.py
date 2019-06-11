@@ -47,7 +47,7 @@ def message_callback(topic, message):
     topic_lookup[topic](message)
 
 mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["database/message", "database/measurement", "watch_confirm_message"])
+mqtt.sub_to_topics(["database/message", "database/measurement", "watch/confirm"])
 
 try:
     mqtt.connect()
