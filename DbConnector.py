@@ -4,7 +4,7 @@ from Message import Message
 class DbConnector:
     def __init__(self):
         self.db = mysql.connector.connect(
-            host="localhost",
+            host="51.83.42.157",
             user="root",
             passwd="1234Hoedjevan!",
             database="medicaldb"
