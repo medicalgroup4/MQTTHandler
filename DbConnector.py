@@ -58,6 +58,11 @@ class DbConnector:
         else:
             return row[0]
 
+    def confirmMessage(self, message_id):
+        cursor = self.db.cursor()
+        sql = "UPDATE Messages SET confirmed = true WHERE id = %s";
+        val = (message_id,)
+        cursor.execute(sql, val)
 
 
 

@@ -158,4 +158,6 @@ class MQTT:
                 obj = Message.from_string(m_decode)
             elif Measurement.is_str_measurement(m_decode):
                 obj = Measurement.from_string(m_decode)
+            else:
+                obj = m_decode
             self.message_callback(topic, obj)

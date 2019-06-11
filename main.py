@@ -22,8 +22,6 @@ def database_message_callback(message):
     DB.storeMessage(message)
     latest_message = DB.getLatestMessageFrom(message.patient_id)
     mqtt.publish_message("watch/message", latest_message)
-
-
     
 
 def database_measurement_callback(measurement):
@@ -34,6 +32,11 @@ def database_measurement_callback(measurement):
     print("oxygen: %d" % measurement.oxygen)
     print("Heartrate: %d" % measurement.heartrate)
     DB.storeMeasurement(measurement)
+
+def watch_confirm_message(message):
+    if message.isdigit():
+        id = int(message)
+        DB.confirmMessage(id)
 
 def message_callback(topic, message):
     topic_lookup = {
