@@ -34,9 +34,11 @@ def database_measurement_callback(measurement):
     DB.storeMeasurement(measurement)
 
 def watch_confirm_message(message):
-    if message.isdigit():
+    try:
         id = int(message)
         DB.confirmMessage(id)
+    except:
+        print("message confirm ID was not an integer: " + message)
 
 def message_callback(topic, message):
     topic_lookup = {
