@@ -20,6 +20,9 @@ def database_message_callback(message):
     print("At location %s" % message.location)
     print("Message contents:\n%s" % message.message)
     DB.storeMessage(message)
+    latest_message = DB.getLatestMessageFrom(message.patient_id)
+    mqtt.publish_message("watch/message", latest_message)
+
 
     
 
