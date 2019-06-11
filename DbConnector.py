@@ -63,6 +63,7 @@ class DbConnector:
         sql = "UPDATE Messages SET confirmed = true WHERE id = %s";
         val = (message_id,)
         cursor.execute(sql, val)
+        print("confirmed message")
 
 
 
