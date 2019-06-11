@@ -8,7 +8,7 @@ class DbConnector:
             user="root",
             passwd="1234Hoedjevan!",
             database="medicaldb",
-            unix_socket="/var/run/mysqld"
+            unix_socket="/var/run/mysqld/"
         )
         print(self.db)
 
