@@ -22,7 +22,7 @@ class DbConnector:
         print("Message inserted: ", val)
     
     def getLatestMessageFrom(self, patient_id):
-        cursor = self.db.cursor()
+        cursor = self.db.cursor(buffered=True)
 
         sql = "SELECT id, patient_id, severity, message, location FROM Messages WHERE patient_id = %s ORDER BY id DESC LIMIT 1"
         val = (patient_id,)
