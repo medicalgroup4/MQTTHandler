@@ -34,9 +34,9 @@ def database_measurement_callback(measurement):
     DB.storeMeasurement(measurement)
 
 def watch_confirm_message(message):
-    print("Confirming message %s" % message)
     try:
         id = int(message)
+        print("Confirming message %d" % id)
         DB.confirmMessage(id)
     except:
         print("message confirm ID was not an integer: " + message)
