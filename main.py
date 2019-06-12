@@ -39,7 +39,7 @@ def watch_confirm_message(message):
         print("Confirming message %d" % id)
         DB.confirmMessage(id)
     except:
-        print("message confirm ID was not an integer: " + message)
+        print("message confirm ID was not an integer: %s" % message)
 
 def message_callback(topic, message):
     topic_lookup = {

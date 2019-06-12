@@ -52,6 +52,7 @@ class DbConnector:
         sql = "SELECT name FROM Patients WHERE id = %s"
         val = (patient_id,)
         cursor.execute(sql, val)
+        self.db.commit()
         row = cursor.fetchone()
         if row is None:
             return None
@@ -60,10 +61,10 @@ class DbConnector:
 
     def confirmMessage(self, message_id):
         cursor = self.db.cursor()
-        sql = "UPDATE Messages SET confirmed = 1 WHERE id = %s";
+        sql = "UPDATE Messages SET confirmed = 1 WHERE id = %s;";
         val = (message_id,)
-        result = cursor.execute(sql, val)
-        print(result)
+        cursor.execute(sql, val)
+        self.db.commit()
         print("confirmed message")
 
 
