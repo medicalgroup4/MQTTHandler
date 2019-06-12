@@ -51,7 +51,7 @@ class DbConnector:
     
 
     def getPatientName(self, patient_id):
-        cursor = self.db.cursor()
+        cursor = self.db.cursor(buffered=True)
         sql = "SELECT name FROM Patients WHERE id = %s"
         val = (patient_id,)
         cursor.execute(sql, val)
