@@ -65,7 +65,6 @@ class DbConnector:
         val = (message_id,)
         cursor.execute(sql, val)
         self.db.commit()
-        print("confirmed message")
 
 
 
