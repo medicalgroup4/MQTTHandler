@@ -20,6 +20,7 @@ class DbConnector:
         cursor.execute(sql, val)
         self.db.commit()
         print("Message inserted: ", val)
+        cursor.close()
     
     def getLatestMessageFrom(self, patient_id):
         cursor = self.db.cursor(buffered=True)
@@ -28,6 +29,7 @@ class DbConnector:
         val = (patient_id,)
         cursor.execute(sql, val)
         row = cursor.fetchone()
+        cursor.close()
         if row is None:
             return None
         else:
@@ -44,6 +46,7 @@ class DbConnector:
         val = (mea.patient_id, mea.systolic, mea.diastolic, mea.oxygen, mea.heartrate)
         cursor.execute(sql, val)
         self.db.commit()
+        cursor.close()
         print("Measurement inserted into db: ", val)
     
 
@@ -54,6 +57,7 @@ class DbConnector:
         cursor.execute(sql, val)
         self.db.commit()
         row = cursor.fetchone()
+        cursor.close()
         if row is None:
             return None
         else:
@@ -65,6 +69,7 @@ class DbConnector:
         val = (message_id,)
         cursor.execute(sql, val)
         self.db.commit()
+        cursor.close()
 
 
 
