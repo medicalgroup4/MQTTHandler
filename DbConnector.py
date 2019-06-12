@@ -62,7 +62,8 @@ class DbConnector:
         cursor = self.db.cursor()
         sql = "UPDATE Messages SET confirmed = true WHERE id = %s";
         val = (message_id,)
-        cursor.execute(sql, val)
+        result = cursor.execute(sql, val)
+        print(result)
         print("confirmed message")
 
 
