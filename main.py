@@ -8,6 +8,15 @@ topic for watch response: watch/ack
 from MQTT import *
 from DbConnector import *
 
+TOPICS = {
+    "MESSAGE_FROM_PATIENT": "database/message",
+    "MEASUREMENT_FROM_PATIENT": "database/measurement",
+    "NURSE_CONFIRMED_MESSAGE": "watch/confirm",
+    "MESSAGE_FOR_WATCH": "watch/message",
+    "NEW_WATCH_CONNECTED": "watch/connected",
+}
+
+
 mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
 
 DB = DbConnector()
@@ -21,7 +30,7 @@ def database_message_callback(message):
     print("Message contents:\n%s" % message.message)
     DB.storeMessage(message)
     latest_message = DB.getLatestMessageFrom(message.patient_id)
-    mqtt.publish_message("watch/message", latest_message)
+    mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], latest_message)
     
 
 def database_measurement_callback(measurement):
@@ -41,16 +50,27 @@ def watch_confirm_message(message):
     except:
         print("message confirm ID was not an integer: %s" % message)
 
+def watch_connected(message):
+    unconfirmedMessages = DB.getUnconfirmedMessages()
+    if unconfirmedMessages is not None:
+        for message in unconfirmedMessages:
+            mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], message)
+
 def message_callback(topic, message):
     topic_lookup = {
-        "database/message": database_message_callback,
-        "database/measurement": database_measurement_callback,
-        "watch/confirm": watch_confirm_message
+        TOPICS["MESSAGE_FROM_PATIENT"]: database_message_callback,
+        TOPICS["MEASUREMENT_FROM_PATIENT"]: database_measurement_callback,
+        TOPICS["NURSE_CONFIRMED_MESSAGE"]: watch_confirm_message,
+        TOPICS["NEW_WATCH_CONNECTED"]: watch_connected
     }
     topic_lookup[topic](message)
 
 mqtt.message_callback = message_callback
-mqtt.sub_to_topics(["database/message", "database/measurement", "watch/confirm"])
+
+mqtt.sub_to_topics([TOPICS["MESSAGE_FROM_PATIENT"],
+                    TOPICS["MEASUREMENT_FROM_PATIENT"],
+                    TOPICS["NURSE_CONFIRMED_MESSAGE"],
+                    TOPICS["NEW_WATCH_CONNECTED"]])
 
 try:
     mqtt.connect()

@@ -55,13 +55,29 @@ class DbConnector:
         sql = "SELECT name FROM Patients WHERE id = %s"
         val = (patient_id,)
         cursor.execute(sql, val)
-        self.db.commit()
         row = cursor.fetchone()
         cursor.close()
         if row is None:
             return None
         else:
             return row[0]
+    
+    def getUnconfirmedMessages(self):
+        cursor = self.db.cursor(buffered=True)
+        sql = "SELECT id, patient_id, severity, message, location FROM Messages WHERE confirmed = 0"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        if result is None:
+            return None
+        
+        returnValue = []
+        for row in result:
+            #               id            severity         message
+            #                    patient_id       location
+            m = Message(row[0], row[1], row[2], row[4], row[3])
+            returnValue.append(m)
+        return returnValue
+        
 
     def confirmMessage(self, message_id):
         cursor = self.db.cursor()
