@@ -71,11 +71,12 @@ def checkForAlarms(measurement):
 
     if systolicAlarm or heartrateAlarm or oxygenAlarm:
         patient_info = DB.getPatientInfo(measurement.patient_id)
-        patient_name = "unknown"
-        patient_location = "unknown"
         if patient_info is not None:
             patient_name = patient_info[0]
             patient_location = patient_info[1]
+        else:
+            patient_name = "unknown"
+            patient_location = "unknown"
     else:
         return
 
