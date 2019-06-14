@@ -9,8 +9,8 @@ from MQTT import *
 from DbConnector import *
 
 TOPICS = {
-    "MESSAGE_FROM_PATIENT": "database/message",
-    "MEASUREMENT_FROM_PATIENT": "database/measurement",
+    "MESSAGE_FROM_BASE_STATION": "database/message",
+    "MEASUREMENT_FROM_BASE_STATION": "database/measurement",
     "NURSE_CONFIRMED_MESSAGE": "watch/confirm",
     "MESSAGE_FOR_WATCH": "watch/message",
     "NEW_WATCH_CONNECTED": "watch/connected",
@@ -82,17 +82,17 @@ def checkForAlarms(measurement):
     if systolicAlarm:
         m = Message(0, measurement.patient_id, 2, patient_location,
                     "%s has a systolic pressure of %d" % (patient_name, measurement.systolic))
-        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+        mqtt.publish_message(TOPICS["MESSAGE_FROM_BASE_STATION"], m)
     
     if heartrateAlarm:
         m = Message(0, measurement.patient_id, 2, patient_location,
                     "%s has a heartrate of %d" % (patient_name, measurement.heartrate))
-        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+        mqtt.publish_message(TOPICS["MESSAGE_FROM_BASE_STATION"], m)
     
     if oxygenAlarm:
         m = Message(0, measurement.patient_id, 2, patient_location,
                     "%s has an oxygen percentage of %d" % (patient_name, measurement.oxygen))
-        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+        mqtt.publish_message(TOPICS["MESSAGE_FROM_BASE_STATION"], m)
 
 
 def watch_confirm_message(message):
@@ -111,8 +111,8 @@ def watch_connected(message):
 
 def message_callback(topic, message):
     topic_lookup = {
-        TOPICS["MESSAGE_FROM_PATIENT"]: database_message_callback,
-        TOPICS["MEASUREMENT_FROM_PATIENT"]: database_measurement_callback,
+        TOPICS["MESSAGE_FROM_BASE_STATION"]: database_message_callback,
+        TOPICS["MEASUREMENT_FROM_BASE_STATION"]: database_measurement_callback,
         TOPICS["NURSE_CONFIRMED_MESSAGE"]: watch_confirm_message,
         TOPICS["NEW_WATCH_CONNECTED"]: watch_connected
     }
@@ -120,8 +120,8 @@ def message_callback(topic, message):
 
 mqtt.message_callback = message_callback
 
-mqtt.sub_to_topics([TOPICS["MESSAGE_FROM_PATIENT"],
-                    TOPICS["MEASUREMENT_FROM_PATIENT"],
+mqtt.sub_to_topics([TOPICS["MESSAGE_FROM_BASE_STATION"],
+                    TOPICS["MEASUREMENT_FROM_BASE_STATION"],
                     TOPICS["NURSE_CONFIRMED_MESSAGE"],
                     TOPICS["NEW_WATCH_CONNECTED"]])
 
