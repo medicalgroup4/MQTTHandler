@@ -16,13 +16,28 @@ TOPICS = {
     "NEW_WATCH_CONNECTED": "watch/connected",
 }
 
+ALARM_BOUNDARIES = {
+    "SYSTOLIC_UPPER": 145,
+    "SYSTOLIC_LOWER": 90,
+    "HEARTRATE_LOWER": 50,
+    "HEARTRATE_UPPER": 110,
+    "OXYGEN_LOWER": 80
+}
+
 
 mqtt = MQTT(ip="51.83.42.157", port=1883, qos=2, mode=Message_mode.BLOCKING)
 
 DB = DbConnector()
 
 def database_message_callback(message):
-    patient_name = DB.getPatientName(message.patient_id)
+    patient_info = DB.getPatientInfo(message.patient_id)
+
+    if patient_info is None:
+        print("Couldn't find patient with id " + message.patient_id)
+        patient_name = "unknown"
+    else:
+        patient_name = patient_info[0]
+
     print("Received message on topic message with id %d" % message.id)
     print("For patient with id %d and name %s" % (message.patient_id, patient_name))
     print("With severity %d" % message.severity)
@@ -41,6 +56,44 @@ def database_measurement_callback(measurement):
     print("oxygen: %d" % measurement.oxygen)
     print("Heartrate: %d" % measurement.heartrate)
     DB.storeMeasurement(measurement)
+    checkForAlarms(measurement)
+
+def checkForAlarms(measurement):
+    systolicTooLow = measurement.systolic < ALARM_BOUNDARIES["SYSTOLIC_LOWER"]
+    systolicTooHigh = measurement.systolic > ALARM_BOUNDARIES["SYSTOLIC_UPPER"]
+
+    heartrateTooLow = measurement.heartrate < ALARM_BOUNDARIES["HEARTRATE_LOWER"]
+    heartrateTooHigh = measurement.heartrate > ALARM_BOUNDARIES["HEARTRATE_UPPER"]
+
+    systolicAlarm = systolicTooLow or systolicTooHigh
+    heartrateAlarm = heartrateTooLow or heartrateTooHigh
+    oxygenAlarm = measurement.oxygen < ALARM_BOUNDARIES["OXYGEN_LOWER"]
+
+    if systolicAlarm or heartrateAlarm or oxygenAlarm:
+        patient_info = DB.getPatientInfo(measurement.patient_id)
+        patient_name = "unknown"
+        patient_location = "unknown"
+        if patient_info is not None:
+            patient_name = patient_info[0]
+            patient_location = patient_info[1]
+    else:
+        return
+
+    if systolicAlarm:
+        m = Message(0, measurement.patient_id, 2, patient_location,
+                    "%s has a systolic pressure of %d" % (patient_name, measurement.systolic))
+        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+    
+    if heartrateAlarm:
+        m = Message(0, measurement.patient_id, 2, patient_location,
+                    "%s has a heartrate of %d" % (patient_name, measurement.heartrate))
+        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+    
+    if oxygenAlarm:
+        m = Message(0, measurement.patient_id, 2, patient_location,
+                    "%s has an oxygen percentage of %d" % (patient_name, measurement.oxygen))
+        mqtt.publish_message(TOPICS["MESSAGE_FOR_WATCH"], m)
+
 
 def watch_confirm_message(message):
     try:

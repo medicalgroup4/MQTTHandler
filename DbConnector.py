@@ -50,9 +50,9 @@ class DbConnector:
         print("Measurement inserted into db: ", val)
     
 
-    def getPatientName(self, patient_id):
+    def getPatientInfo(self, patient_id):
         cursor = self.db.cursor(buffered=True)
-        sql = "SELECT name FROM Patients WHERE id = %s"
+        sql = "SELECT name, room FROM Patients WHERE id = %s"
         val = (patient_id,)
         cursor.execute(sql, val)
         row = cursor.fetchone()
@@ -60,7 +60,7 @@ class DbConnector:
         if row is None:
             return None
         else:
-            return row[0]
+            return [row[0], row[1]]
     
     def getUnconfirmedMessages(self):
         cursor = self.db.cursor(buffered=True)
